@@ -49,13 +49,17 @@ body {
 .todo__item {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+}
+.todo__item-text {
+  word-break: break-all;
 }
 
 .todo__item-delete-btn {
   background-image: url("/img/delete.svg");
   background-repeat: no-repeat;
   background-position: center;
-  width: 50px;
+  width: 20px;
   opacity: 0;
 }
 
