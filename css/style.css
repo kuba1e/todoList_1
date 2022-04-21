@@ -1,0 +1,192 @@
+body {
+  background-color: #f5f5f5;
+}
+
+.main {
+  width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.todo {
+  width: 60%;
+}
+
+.todo__title {
+  text-align: center;
+  font-size: 48px;
+  font-weight: 100;
+}
+
+.todo__title-text {
+  color: rgba(175, 47, 47, 0.15);
+}
+
+.todo__form-container {
+  display: flex;
+}
+
+.todo__form {
+  flex-grow: 1;
+}
+
+.todo__form-input {
+  width: 100%;
+}
+
+.todo__select-all-btn::before {
+  content: ">";
+}
+
+.todo__item-list {
+  margin: 0;
+  padding: 0;
+}
+
+.todo__item {
+  display: flex;
+  justify-content: space-between;
+}
+
+.todo__item-delete-btn {
+  background-image: url("/img/delete.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 50px;
+  opacity: 0;
+}
+
+.todo__item-delete-btn:hover {
+  opacity: 1;
+  cursor: pointer;
+}
+
+.todo__item-text.done {
+  text-decoration: line-through;
+  color: #d9d9d9;
+}
+
+.todo__item-delete-btn {
+}
+
+.todo__item-delete-btn :hover {
+  visibility: visible;
+  cursor: pointer;
+}
+
+.todo__control {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.todo__control-count {
+  width: 10%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.todo__control-filter-list {
+  width: 30%;
+  display: flex;
+  justify-content: space-between;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.todo__control-filter-list-item {
+}
+
+.todo__control-filter-item-label {
+  padding: 5px;
+  cursor: pointer;
+}
+
+.todo__control-filter-list-item.checked {
+  border: 1px solid;
+  border-radius: 3px;
+  border-color: rgba(175, 47, 47, 0.2);
+}
+
+.control {
+  font-family: arial;
+  display: block;
+  position: relative;
+  padding-left: 30px;
+  margin-bottom: 5px;
+  padding-top: 3px;
+  cursor: pointer;
+  font-size: 16px;
+}
+.control input {
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
+}
+.control_indicator {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background: #e6e6e6;
+  border: 0px solid #000000;
+  border-radius: 0px;
+}
+.control:hover input ~ .control_indicator,
+.control input:focus ~ .control_indicator {
+  background: #cccccc;
+}
+
+.control input:checked ~ .control_indicator {
+  background: #2aa1c0;
+}
+.control:hover input:not([disabled]):checked ~ .control_indicator,
+.control input:checked:focus ~ .control_indicator {
+  background: #0e6647;
+}
+.control input:disabled ~ .control_indicator {
+  background: #e6e6e6;
+  opacity: 0.6;
+  pointer-events: none;
+}
+.control_indicator:after {
+  box-sizing: unset;
+  content: "";
+  position: absolute;
+  display: none;
+}
+.control input:checked ~ .control_indicator:after {
+  display: block;
+}
+.control-checkbox .control_indicator:after {
+  left: 8px;
+  top: 4px;
+  width: 3px;
+  height: 8px;
+  border: solid #ffffff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.control-checkbox input:disabled ~ .control_indicator:after {
+  border-color: #7b7b7b;
+}
+.control-checkbox .control_indicator::before {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4.5rem;
+  height: 4.5rem;
+  margin-left: -1.3rem;
+  margin-top: -1.3rem;
+  background: #2aa1c0;
+  border-radius: 3rem;
+  opacity: 0.6;
+  z-index: 99999;
+  transform: scale(0);
+}
