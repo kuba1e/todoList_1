@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
     todoCountInfo,
     todoCountInfoText,
     todoFooter: todoControl,
+    clearBtn,
   } = initApp(rootElement, todoItemsArray);
 
   function initApp(rootElement, todos) {
@@ -40,12 +41,13 @@ document.addEventListener("DOMContentLoaded", (event) => {
       todoSelectAllBtn,
       todoAddFormInput,
       todoItemsList,
-    } = getTodoBody();
+    } = getTodoBody(todos);
 
     const {
       footerContainer: todoFooter,
       todoCountInfo,
       todoCountInfoText,
+      clearBtn,
     } = getFooter(filters, todos);
 
     todoElement.classList.add("todo");
@@ -55,10 +57,13 @@ document.addEventListener("DOMContentLoaded", (event) => {
       todoItemsList,
       todoCountInfo,
       todoCountInfoText,
-      todoFooter
+      todoFooter,
+      clearBtn
     );
 
-    todoElement.append(todoHeader, todoBody, todoFooter);
+    todoBody.append(todoFooter);
+
+    todoElement.append(todoHeader, todoBody);
 
     fragment.append(todoElement);
 
@@ -72,10 +77,11 @@ document.addEventListener("DOMContentLoaded", (event) => {
       todoCountInfo,
       todoCountInfoText,
       todoFooter,
+      clearBtn,
     };
   }
 
-  function getFooter (filters, todos) {
+  function getFooter(filters, todos) {
     const footerContainer = document.createElement("div");
 
     const todoCount = document.createElement("div");
@@ -100,14 +106,18 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
     todoCount.textContent = "left";
 
-    clearBtn.textContent= 'Clear completed'
+    clearBtn.textContent = "Clear completed";
+
+    if (todos.length - getTodoCount(todos)) {
+      clearBtn.classList.add("active");
+    }
 
     todoCount.prepend(todoCountInfo, todoCountInfoText);
 
     footerContainer.append(todoCount, filtersList, clearBtn);
 
-    return { footerContainer, todoCountInfo, todoCountInfoText };
-  };
+    return { footerContainer, todoCountInfo, todoCountInfoText, clearBtn };
+  }
 
   function getTodoHeader() {
     const todoTitleContainer = document.createElement("div");
@@ -119,7 +129,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
     return todoTitleContainer;
   }
 
-  function getTodoBody() {
+  function getTodoBody(todos) {
     const todoContentContainer = document.createElement("div");
 
     const todoAddFormContainer = document.createElement("div");
@@ -134,6 +144,10 @@ document.addEventListener("DOMContentLoaded", (event) => {
     todoAddFormContainer.classList.add("todo__form-container");
     todoAddForm.classList.add("todo__form");
     todoSelectAllBtn.classList.add("todo__select-all-btn");
+    if (!(todos.length - getDoneCount(todos))) {
+      todoSelectAllBtn.classList.add("selected");
+    }
+
     todoAddFormInput.classList.add("todo__form-input");
     todoItemsList.classList.add("todo__item-list");
 
@@ -162,7 +176,9 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
       filter.classList.add("todo__control-filter-list-item");
 
-      if (checked) filter.classList.add("checked");
+      if (checked) {
+        filter.classList.add("checked");
+      }
       filterLabel.classList.add("todo__control-filter-item-label");
 
       filterLabel.textContent = label;
@@ -226,7 +242,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
     const checkboxIndicator = document.createElement("div");
 
     checkboxContainer.classList.add("todo__item-control");
-    checkboxLabel.classList.add("control", 'control-checkbox');
+    checkboxLabel.classList.add("control", "control-checkbox");
     checkboxInput.classList.add("control__input");
     checkboxIndicator.classList.add("control_indicator");
 
@@ -248,7 +264,11 @@ document.addEventListener("DOMContentLoaded", (event) => {
   }
 
   function getTodoCount(todos) {
-    return todos.filter((todo) => todo.done === false).length;
+    return todos.filter((todo) => !todo.done).length;
+  }
+
+  function getDoneCount(todos) {
+    return todos.filter((todo) => todo.done).length;
   }
 
   function getCountLabel(todos) {
@@ -294,7 +314,8 @@ document.addEventListener("DOMContentLoaded", (event) => {
     parentElement,
     todoCountInfo,
     todoCountInfoText,
-    todoControl
+    todoControl,
+    clearBtn
   ) {
     const fragment = document.createDocumentFragment();
     let filteredTodos = prepareArrayForRender(todos, todoControl);
@@ -303,15 +324,32 @@ document.addEventListener("DOMContentLoaded", (event) => {
       const todoListItem = document.createElement("li");
       const todoListItemText = document.createElement("p");
 
+      const deleteBtn = getDeleteBtn();
+
       todoListItem.classList.add("todo__item");
+
       todoListItemText.classList.add("todo__item-text");
 
       todoListItem.dataset.id = id;
 
-      todoListItemText.textContent = label;
-      if (done) todoListItemText.classList.add("done");
+      todoListItem.addEventListener("mouseover", () =>
+        deleteBtn.classList.toggle("active")
+      );
+      todoListItem.addEventListener("mouseout", () =>
+        deleteBtn.classList.toggle("active")
+      );
 
-      todoListItem.append(getCheckbox(done), todoListItemText, getDeleteBtn());
+      todoListItemText.textContent = label;
+      if (done) {
+        todoListItemText.classList.add("done");
+      }
+      if (todos.length - getTodoCount(todos)) {
+        clearBtn.classList.add("active");
+      } else {
+        clearBtn.classList.remove("active");
+      }
+
+      todoListItem.append(getCheckbox(done), todoListItemText, deleteBtn);
       fragment.append(todoListItem);
     });
     parentElement.innerHTML = "";
@@ -332,21 +370,32 @@ document.addEventListener("DOMContentLoaded", (event) => {
       todoItemsList,
       todoCountInfo,
       todoCountInfoText,
-      todoControl
+      todoControl,
+      clearBtn
     );
   });
 
-  todoSelectAllBtn.addEventListener("click", (event) => {
-    todoItemsArray.forEach((todo) => {
-      todo.done = true;
-    });
+  todoSelectAllBtn.addEventListener("click", ({ target }) => {
+    if (target.classList.contains("selected")) {
+      todoItemsArray.forEach((todo) => {
+        todo.done = false;
+      });
+    } else {
+      todoItemsArray.forEach((todo) => {
+        todo.done = true;
+      });
+    }
+
+    target.classList.toggle("selected");
+    saveToLocalStorage(todoItemsArray);
 
     renderTodoItems(
       todoItemsArray,
       todoItemsList,
       todoCountInfo,
       todoCountInfoText,
-      todoControl
+      todoControl,
+      clearBtn
     );
   });
 
@@ -361,7 +410,8 @@ document.addEventListener("DOMContentLoaded", (event) => {
         todoItemsList,
         todoCountInfo,
         todoCountInfoText,
-        todoControl
+        todoControl,
+        clearBtn
       );
     }
   });
@@ -375,7 +425,8 @@ document.addEventListener("DOMContentLoaded", (event) => {
       todoItemsList,
       todoCountInfo,
       todoCountInfoText,
-      todoControl
+      todoControl,
+      clearBtn
     );
   });
 
@@ -388,18 +439,19 @@ document.addEventListener("DOMContentLoaded", (event) => {
         todoItemsList,
         todoCountInfo,
         todoCountInfoText,
-        todoControl
+        todoControl,
+        clearBtn
       );
     } else if (target.classList.contains("todo__control-filter-item-label")) {
       const filterItem = target.parentElement;
-      const filterKey = filterItem.dataset.filter;
       updateFiltersView(todoControl, filterItem);
       renderTodoItems(
         todoItemsArray,
         todoItemsList,
         todoCountInfo,
         todoCountInfoText,
-        todoControl
+        todoControl,
+        clearBtn
       );
     }
   });
