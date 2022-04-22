@@ -144,7 +144,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
     todoAddFormContainer.classList.add("todo__form-container");
     todoAddForm.classList.add("todo__form");
     todoSelectAllBtn.classList.add("todo__select-all-btn");
-    if (!(todos.length - getDoneCount(todos))) {
+    if (!(todos.length - getDoneCount(todos)) && todos.length > 0) {
       todoSelectAllBtn.classList.add("selected");
     }
 
@@ -343,15 +343,18 @@ document.addEventListener("DOMContentLoaded", (event) => {
       if (done) {
         todoListItemText.classList.add("done");
       }
-      if (todos.length - getTodoCount(todos)) {
-        clearBtn.classList.add("active");
-      } else {
-        clearBtn.classList.remove("active");
-      }
 
       todoListItem.append(getCheckbox(done), todoListItemText, deleteBtn);
       fragment.append(todoListItem);
     });
+
+    if (todos.length - getTodoCount(todos) && todos.length > 0) {
+      console.log(todos.length - getTodoCount(todos) && todos.length > 0);
+      clearBtn.classList.add("active");
+    } else {
+      clearBtn.classList.remove("active");
+    }
+
     parentElement.innerHTML = "";
     parentElement.append(fragment);
     updateTodoCount(todos, todoCountInfo, todoCountInfoText);
